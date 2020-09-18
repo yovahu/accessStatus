@@ -2,53 +2,59 @@ package app;
 
 import java.sql.*;
 
-public class DB {
-    private static final String URL = "jdbc:postgresql://127.0.0.1:5432/access_system_db"; //Адрес БД
+public class DB {                                                               //Хранит данные подключения к БД PostgreSQL
+
+    //Адрес БД
+    private static final String URL = "jdbc:postgresql://127.0.0.1:5432/access_system_db";
+
     //Данные пользователя
-    private static final String USERNAME = "postgres";              //Логин
-    private static final String PASSWORD = "evgenhalk1999";              //Пароль
-    private static final String DRIVER = "org.postgresql.Driver";   //путь к JDBC драйверу
+    private static final String USERNAME = "postgres";                          //Логин БД
+    private static final String PASSWORD = "evgenhalk1999";                     //Пароль БД
+    private static final String DRIVER = "org.postgresql.Driver";               //путь к JDBC драйверу
 
-    private static Connection conn = null;
-    private static Statement statement = null;
+    //Подключение к БД + SQL контейнер
+    private static Connection conn = null;                                      //Контейнер для подключения БД
+    private static Statement statement = null;                                  //Контейнер для выполнения SQL-запроса
 
-    private static Connection getDBConnection(){            //Подключение к БД
-        Connection conn = null;
+    //Подключение к БД
+    private static Connection getDBConnection(){
+        Connection conn = null;                                                 //Переменная содер-ая сессия подключения к БД
         try {
-            Class.forName(DRIVER);
+            Class.forName(DRIVER);                                              //Указываем используемый драйвер
         } catch (ClassNotFoundException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());                                 //Вывод ошибки, если не удается получить данные о драйвере
         }
         try {
-            conn = DriverManager.getConnection(URL,USERNAME, PASSWORD);
+            conn = DriverManager.getConnection(URL,USERNAME, PASSWORD);         //Получаем подключение к БД
             System.out.println("Соединение с "+ URL + " установлено");
-            return conn;
+            return conn;                                                        //Возвращаем успешное подключение
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());                                 //Вывод ошибки, если есть проблемы с подключением
             System.out.println("Соединение с "+ URL + "не установлено");
         }
-        return conn;
+        return conn;                                                            //Возвращаем неудачное подключение
     }
 
-    public void insertIntoTable(String log, String pass) throws SQLException {             //Добавляем значение в созданную таблицу
+    //Добавление значения в таблицу users
+    public void insertIntoTable(String log, String pass) throws SQLException {
 
-        String ins =  "INSERT INTO users(login, password) VALUES (?,?)";
+        String ins =  "INSERT INTO users(login, password) VALUES (?,?)";         //SQL-запрос
 
         try {
-            conn = getDBConnection();
-            PreparedStatement statement = conn.prepareStatement(ins);
-            statement.setString(1,log);
-            statement.setString(2,pass);
-            //Start SQL query
-            statement.executeUpdate();
+            conn = getDBConnection();                                            //Получаем наше подключение
+            PreparedStatement statement = conn.prepareStatement(ins);            //С помощью PreparedStatement подготавливаем SQL-запрсос к выполнению
+            statement.setString(1,log);                             //1-й устанавливаемый в БД параметр SQL-запроса - логин пользователя
+            statement.setString(2,pass);                            //2-й устанавливаемый в БД параметр SQL-запроса - пароль пользователя
+
+            statement.executeUpdate();                                          //Выполнение SQL-запроса (может возвращать количество добавленных строк)
             System.out.println("Данные успешно добавлены в \"таблицу\".");
         }catch (SQLException e){
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());                                 //Вывод ошибки, если SQL-запрос не был исполнен
         }finally {
-            if(statement != null) {
-                statement.close();
-            }if(conn != null){
-                conn.close();
+            if(statement != null) {                                             //Если контейнер SQL-запроса не пуст...
+                statement.close();                                              //...закрыть его
+            }if(conn != null){                                                  //Если есть подключение к БД...
+                conn.close();                                                   //...закрыть его
             }
         }
     }
