@@ -17,7 +17,7 @@ public class DB {                                                               
     private static Statement statement = null;                                  //Контейнер для выполнения SQL-запроса
 
     //Подключение к БД
-    private static Connection getDBConnection(){
+    public Connection getDBConnection(){
         Connection conn = null;                                                 //Переменная содер-ая сессия подключения к БД
         try {
             Class.forName(DRIVER);                                              //Указываем используемый драйвер
@@ -33,29 +33,5 @@ public class DB {                                                               
             System.out.println("Соединение с "+ URL + "не установлено");
         }
         return conn;                                                            //Возвращаем неудачное подключение
-    }
-
-    //Добавление значения в таблицу users
-    public void insertIntoTable(String log, String pass) throws SQLException {
-
-        String ins =  "INSERT INTO users(login, password) VALUES (?,?)";         //SQL-запрос
-
-        try {
-            conn = getDBConnection();                                            //Получаем наше подключение
-            PreparedStatement statement = conn.prepareStatement(ins);            //С помощью PreparedStatement подготавливаем SQL-запрсос к выполнению
-            statement.setString(1,log);                             //1-й устанавливаемый в БД параметр SQL-запроса - логин пользователя
-            statement.setString(2,pass);                            //2-й устанавливаемый в БД параметр SQL-запроса - пароль пользователя
-
-            statement.executeUpdate();                                          //Выполнение SQL-запроса (может возвращать количество добавленных строк)
-            System.out.println("Данные успешно добавлены в \"таблицу\".");
-        }catch (SQLException e){
-            System.out.println(e.getMessage());                                 //Вывод ошибки, если SQL-запрос не был исполнен
-        }finally {
-            if(statement != null) {                                             //Если контейнер SQL-запроса не пуст...
-                statement.close();                                              //...закрыть его
-            }if(conn != null){                                                  //Если есть подключение к БД...
-                conn.close();                                                   //...закрыть его
-            }
-        }
     }
 }
