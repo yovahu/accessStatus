@@ -35,22 +35,22 @@ public class User {
     }
 
     //Инициализация логина
-    public void setLogin(String login) {                //Инициализируем логин пользователю
+    public void setLogin(String login) {
         this.login = login;
     }
 
     //Получение пароля
-    public String getLogin() {                          //Получаем данные логина пользователя
+    public String getLogin() {
         return login;
     }
 
     //Инициализация пароля
-    public void setPassword(String password) {          //Инициализируем пароль пользователю
+    public void setPassword(String password) {
         this.password = password;
     }
 
     //Получение пароля
-    public String getPassword() {                       //Получаем данные пароля пользователя
+    public String getPassword() {
         return password;
     }
 
