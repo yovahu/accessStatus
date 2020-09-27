@@ -1,0 +1,1 @@
+INSERT INTO users(login, password, registration_date) VALUES (?,?,?)
