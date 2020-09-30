@@ -28,12 +28,13 @@ public class DB {                                                               
             System.out.println(e.getMessage());                                 //Вывод ошибки, если не удается получить данные о драйвере
         }
         try {
+            System.out.println("Подключаемся к БД...");
             conn = DriverManager.getConnection(URL,USERNAME, PASSWORD);         //Получаем подключение к БД
-            System.out.println("Соединение с \""+ URL + "\"установлено");
+            System.out.println("Соединение с \""+ URL + "\" установлено");
             return conn;                                                        //Возвращаем успешное подключение
         } catch (SQLException e) {
             System.out.println(e.getMessage());                                 //Вывод ошибки, если есть проблемы с подключением
-            System.out.println("Соединение с \""+ URL + "\"не установлено");
+            System.out.println("Соединение с \""+ URL + "\" не установлено");
         }
         return null;                                                            //Возвращаем неудачное подключение
     }
@@ -55,10 +56,57 @@ public class DB {                                                               
         }catch (SQLException e){
             System.out.println(e.getMessage());                                 //Вывод ошибки, если SQL-запрос не был исполнен
         }finally {
-            if(statement != null) {                                             //Если контейнер SQL-запроса не пуст...
-                statement.close();                                              //...закрыть его
-            }if(conn != null){                                                  //Если есть подключение к БД...
-                conn.close();                                                   //...закрыть его
+            if(statement != null) {
+                statement.close();
+            }if(conn != null){
+                conn.close();
+            }
+        }
+    }
+
+    public void deleteRow(int id) throws SQLException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        String updateUserPass =  "DELETE FROM users WHERE id = ?";
+
+        try {
+            conn = getDBConnection();
+            statement = conn.prepareStatement(updateUserPass);
+            statement.setInt(1,id);
+            statement.executeUpdate();
+            statement.close();
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }finally {
+            if(statement != null) {
+                statement.close();
+            }if(conn != null){
+                conn.close();
+            }
+        }
+    }
+
+    //обновление пароля пользователя по id
+    public void updatePass(int id, String pass) throws SQLException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        String updateUserPass =  "UPDATE users SET password = ? WHERE id = ?";
+
+        try {
+            conn = getDBConnection();
+            statement = conn.prepareStatement(updateUserPass);
+            statement.setString(1,pass);
+            statement.setInt(2,id);
+
+            statement.executeUpdate();
+            statement.close();
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }finally {
+            if(statement != null) {
+                statement.close();
+            }if(conn != null){
+                conn.close();
             }
         }
     }

@@ -1,58 +1,62 @@
 package app;
 
-import databases.DB;
-import entities.User;
-
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) throws SQLException {
-        DB dbo = new DB();
-        User user1 = new User();
+
+        UserReg obj = new UserReg();
+        UserSignIn sucUser = new UserSignIn();
+
         Scanner in = new Scanner(System.in);
-        System.out.println("Select 1 or 2:");
-        System.out.println("1. Sign Up");
-        System.out.println("2. Sign In");
-        int selected = in.nextInt();
-        switch (selected){
+        int a = in.nextInt();
+        switch (a){
             case 1:
-                System.out.print("Введите логин: ");
-                String login = in.next();
-                user1.signUp(login);
+                System.out.print("login:");
+                String signInLogin = in.next();
+                System.out.print("pass:");
+                String signInPass = in.next();
+                System.out.println(sucUser.signIn(signInLogin,signInPass));
+                //System.out.println(sucUser.user.getId());
+                System.out.println("1. Сменить пароль");
+                System.out.println("2. Удалить аккаунт");
+                int c = in.nextInt();
+                switch (c){
+                    case 1:
+                        sucUser.update(sucUser.user.getId());
+                        System.out.print("Пароль изменён.");
+                        break;
+                    case 2:
+                        sucUser.delete(sucUser.user.getId());
+                        System.out.print("Аккаунт успешно удалён.");
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 2:
-                int counter = 0;
-                while (true){
-                    System.out.print("Введите логин: ");
-                    login = in.next();
-                    System.out.print("Введите пароль: ");
-                    String password = in.next();
-                    if (counter!=2) {
-                        String val = user1.signIn(login, password);
-                        if (val.equals("SUCCESS")) {
-                            System.out.println("Вы успешно вошли в систему");
-                            System.out.println(user1.getId());
-                            System.out.println(user1.getLogin());
-                            System.out.println(user1.getPassword());
-                            System.out.println(user1.getRegistrationDate());
-                            break;
-                        }else{
-                            System.out.println("Вы ввели неверный логин или пароль");
-                            counter++;
-                        }
-                    }else {
-                        System.out.println("Вы превысили число допустимых попыток: 3\nЧтобы снова попробовать войти в систему необходимо подождать: 5 секунд");
-                        try {
-                            Thread.sleep(5000);
-                            counter = 0;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+                System.out.print("login:");
+                String signUpLogin = in.next();
+                obj.signUp(signUpLogin);
+                break;
+            case 3:
+                GregorianCalendar gcalendar = new GregorianCalendar();
+                SimpleDateFormat simpDate;
+                simpDate = new SimpleDateFormat("HH:mm:ss");
+                System.out.print("Дата: ");
+                System.out.print(gcalendar.get(Calendar.MONTH)+1);
+                System.out.print("-" + gcalendar.get(Calendar.DATE) + "-");
+                System.out.println(gcalendar.get(Calendar.YEAR));
+                /*
+                System.out.print("Время: ");
+                System.out.print(gcalendar.get(Calendar.HOUR) + ":");
+                System.out.print(gcalendar.get(Calendar.MINUTE) + ":");
+                System.out.println(gcalendar.get(Calendar.SECOND));
+                */
+                System.out.print(simpDate.format(gcalendar.getTime()));
             default:
                 break;
         }
