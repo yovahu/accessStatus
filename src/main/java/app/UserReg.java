@@ -8,16 +8,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+//Регистрация пользователей в системе
 public class UserReg {
 
-    User user = new User();
+    User usersDataOnRegistrationTime = new User();
     public DB dbo = new DB();
+    Logging lgng = new Logging();
 
+    //Регистрация в системе
     public void signUp(String login) throws SQLException {
         boolean checker = checkLogins(login);
         if (checker){
-            User newUser = new User(login,genUserPass(login),getCurrentTimeStamp());
-            dbo.insertIntoTable(newUser.getLogin(),newUser.getPassword(),newUser.getRegistrationDate());
+            usersDataOnRegistrationTime.setLogin(login);
+            usersDataOnRegistrationTime.setPassword(genUserPass(login));
+            usersDataOnRegistrationTime.setRegistrationDate(getCurrentTimeStamp());
+            lgng.writeIntoFile("Пользователь " +  usersDataOnRegistrationTime.getLogin() + " зарегистрировался в системе " + lgng.timeOfAction());
+            dbo.insertIntoTable(usersDataOnRegistrationTime.getLogin(), usersDataOnRegistrationTime.getPassword(), usersDataOnRegistrationTime.getRegistrationDate());
         }else{
             System.out.println("Такой логин уже существует!");
         }
