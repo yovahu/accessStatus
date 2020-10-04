@@ -3,7 +3,9 @@ package databases;
 import entities.User;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class DB {                                                               //Хранит данные подключения к БД PostgreSQL
 
@@ -64,6 +66,69 @@ public class DB {                                                               
         }
     }
 
+    public void insertIntoBanTable(String login, String dat) throws SQLException {
+        Connection conn = null;
+        PreparedStatement statement = null;
+        String ins =  "INSERT INTO user_status(user_login, ban_date) VALUES (?,?)";
+
+        try {
+            conn = getDBConnection();
+            statement = conn.prepareStatement(ins);                              //С помощью PreparedStatement подготавливаем SQL-запрсос к выполнению
+            statement.setString(1,login);                             //логин пользователя
+            statement.setString(2,dat);                            //пароль пользователя
+            statement.executeUpdate();                                          //Выполнение SQL-запроса (может возвращать количество добавленных строк)
+            System.out.println("Данные успешно добавлены в \"таблицу\".");
+        }catch (SQLException e){
+            System.out.println(e.getMessage());                                 //Вывод ошибки, если SQL-запрос не был исполнен
+        }finally {
+            if(statement != null) {
+                statement.close();
+            }if(conn != null){
+                conn.close();
+            }
+        }
+    }
+
+    public void deleteBannedUser(String login) throws SQLException{
+        Connection conn = null;
+        PreparedStatement statement = null;
+        String updateUserPass =  "DELETE FROM user_status WHERE user_login = ?";
+
+        try {
+            conn = getDBConnection();
+            statement = conn.prepareStatement(updateUserPass);
+            statement.setString(1,login);
+            statement.executeUpdate();
+            statement.close();
+        }catch (SQLException ex){
+            ex.printStackTrace();
+        }finally {
+            if(statement != null) {
+                statement.close();
+            }if(conn != null){
+                conn.close();
+            }
+        }
+    }
+
+    //Получение логинов с таблицы
+    public String getBannedUserData(String login){
+        Connection conn;
+        String dat="";
+        try{
+            conn = getDBConnection();
+            PreparedStatement ps = conn.prepareStatement( "SELECT ban_date FROM user_status WHERE user_login=?" );
+            ps.setString( 1, login );
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                dat = rs.getString("ban_date");
+            }
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return dat;
+    }
+
     public void deleteRow(int id) throws SQLException {
         Connection conn = null;
         PreparedStatement statement = null;
@@ -118,7 +183,6 @@ public class DB {                                                               
         String getLogins =  "SELECT * from users";
 
         HashMap<Integer, User> users = new HashMap<>();
-
         try{
             conn = getDBConnection();
             statement = conn.createStatement();

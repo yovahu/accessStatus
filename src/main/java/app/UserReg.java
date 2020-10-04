@@ -11,26 +11,27 @@ import java.util.Random;
 //Регистрация пользователей в системе
 public class UserReg {
 
-    User usersDataOnRegistrationTime = new User();
     public DB dbo = new DB();
     Logging lgng = new Logging();
 
     //Регистрация в системе
-    public void signUp(String login) throws SQLException {
+    public Boolean signUp(String login,String pass){
         boolean checker = checkLogins(login);
         if (checker){
-            usersDataOnRegistrationTime.setLogin(login);
-            usersDataOnRegistrationTime.setPassword(genUserPass(login));
-            usersDataOnRegistrationTime.setRegistrationDate(getCurrentTimeStamp());
-            lgng.writeIntoFile("Пользователь " +  usersDataOnRegistrationTime.getLogin() + " зарегистрировался в системе " + lgng.timeOfAction());
-            dbo.insertIntoTable(usersDataOnRegistrationTime.getLogin(), usersDataOnRegistrationTime.getPassword(), usersDataOnRegistrationTime.getRegistrationDate());
+            lgng.writeIntoFile("Пользователь " +  login + " зарегистрировался в системе " + lgng.timeOfAction());
+            try{
+               dbo.insertIntoTable(login, pass, getCurrentTimeStamp());
+           }catch (SQLException ex){
+               ex.printStackTrace();
+           }
+            return true;
         }else{
-            System.out.println("Такой логин уже существует!");
+            return false;
         }
     }
 
     //Генерация пароля пользователя
-    public static String genUserPass(String login) {
+    public String genUserPass(String login) {
         StringBuilder generatedPass = new StringBuilder();                        //В этой переменной собираем пароль
         final Random rand = new Random();                                         //Генерация чисел
         String ruWords = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
